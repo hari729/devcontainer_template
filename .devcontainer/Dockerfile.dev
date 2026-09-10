@@ -36,10 +36,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
        > /etc/apt/sources.list.d/nodesource.list \
     && rm -rf /var/lib/apt/lists/*
 
-ENV PATH="/root/.cargo/bin:${PATH}"
+ENV CARGO_HOME=/usr/local/cargo
+ENV PATH="${CARGO_HOME}/bin:${PATH}"
 
-RUN curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash \
-    && cargo-binstall --no-confirm tree-sitter-cli
+RUN mkdir -p ${CARGO_HOME} \
+    && curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash \
+    && cargo-binstall --no-confirm tree-sitter-cli \
+    && chmod -R a+rX ${CARGO_HOME}
 
 # --- Neovim, latest stable, glibc build (matches the Ubuntu base image) ---
 ARG NVIM_ARCH=linux-x86_64

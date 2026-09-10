@@ -1,6 +1,6 @@
 IMAGE_NS    ?= ros2dev
 ROS_DISTRO  ?= jazzy
-DEPS_TAG    ?= nav2gz
+DEPS_TAG    ?= gz
 USER_UID    ?= $(shell id -u)
 USER_GID    ?= $(shell id -g)
 
