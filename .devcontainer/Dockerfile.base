@@ -36,13 +36,13 @@ RUN groupadd --gid $USER_GID $USERNAME \
     && echo "$USERNAME ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/$USERNAME \
     && chmod 0440 /etc/sudoers.d/$USERNAME
 
-# Seed rosdep now so it's cached in this layer; individual project workspaces
-# still run `rosdep install` themselves via postCreateCommand.
-RUN rosdep update --rosdistro $ROS_DISTRO || true
-
 USER $USERNAME
 WORKDIR /home/$USERNAME
 ENV USERNAME=$USERNAME
+
+# Seed rosdep now so it's cached in this layer; individual project workspaces
+# still run `rosdep install` themselves via postCreateCommand.
+RUN rosdep update --rosdistro $ROS_DISTRO || true
 
 RUN echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> ~/.bashrc
 CMD ["bash"]
