@@ -1,0 +1,28 @@
+# =============================================================================
+# DEPS LAYER (project-specific — this is the one you copy per project/robot)
+# Extends the shared `dev` image with whatever extra stack THIS project needs.
+# Trim/extend the apt list below per project; everything else stays untouched.
+# =============================================================================
+ARG BASE_IMAGE=ros2dev/dev:jazzy
+FROM ${BASE_IMAGE}
+
+USER root
+ARG ROS_DISTRO=jazzy
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        ros-${ROS_DISTRO}-ros-gz \
+        ros-${ROS_DISTRO}-turtlesim \
+        # ros-${ROS_DISTRO}-gz-ros2-control \
+        # ros-${ROS_DISTRO}-navigation2 \
+        # ros-${ROS_DISTRO}-nav2-bringup \
+        # ros-${ROS_DISTRO}-slam-toolbox \
+        # ros-${ROS_DISTRO}-robot-localization \
+        ros-${ROS_DISTRO}-rviz2 \
+        ros-${ROS_DISTRO}-rviz-common \
+        ros-${ROS_DISTRO}-rviz-default-plugins \
+    && rm -rf /var/lib/apt/lists/*
+
+ARG USERNAME=ros
+USER $USERNAME
+
+CMD ["bash"]

@@ -1,0 +1,42 @@
+{
+  "name": "ros2-jazzy-dev",
+
+  // Builds Dockerfile.deps, which itself chains base -> dev -> deps.
+  // Run `make all` at repo root once before first attach so the base/dev
+  // layers exist locally (this build step only rebuilds the deps layer).
+  "build": {
+    "dockerfile": "./Dockerfile.deps",
+    "context": "..",
+    "args": {
+      "BASE_IMAGE": "ros2dev/dev:jazzy",
+      "ROS_DISTRO": "jazzy"
+    }
+  },
+
+  "runArgs": [
+    "--gpus", "all",
+    "--network=host",
+    "--ipc=host",
+    "--pid=host",
+    "--cap-add=SYS_PTRACE"
+  ],
+
+  "containerEnv": {
+    "DISPLAY": "${localEnv:DISPLAY}",
+    "NVIDIA_VISIBLE_DEVICES": "all",
+    "NVIDIA_DRIVER_CAPABILITIES": "all,graphics"
+  },
+
+  "mounts": [
+    "source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind",
+    "source=${localWorkspaceFolder},target=/home/ros/ws,type=bind,consistency=cached",
+    "source=${localEnv:HOME}/.config/nvim,target=/home/ros/.config/nvim,type=bind,consistency=cached"
+  ],
+
+  "workspaceFolder": "/home/ros/ws",
+  "remoteUser": "ros",
+
+  // Installs whatever this specific project's src/ packages declare as deps.
+  // Safe to fail (|| true) on first run before src/ has any packages in it.
+  "postCreateCommand": "sudo rosdep update && rosdep install --from-paths /home/ros/ws/src --ignore-src -r -y || true"
+}
